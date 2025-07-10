@@ -1,18 +1,27 @@
-# utils/text_utils.py
-
 import openai
+import logging
 
-def generate_story(prompt, image_context):
-    full_prompt = f"You are a creative writer. Write a short story based on the image context: '{image_context}' and user prompt: '{prompt}'. Make it imaginative, engaging, and under 250 words."
+def generate_story(prompt: str, image_description: str) -> str:
+    """
+    Generates a story based on the user's prompt and an image description.
 
-    response = openai.ChatCompletion.create(
-        model="gpt-4",
-        messages=[
-            {"role": "system", "content": "You are a story generator AI."},
-            {"role": "user", "content": full_prompt}
-        ],
-        max_tokens=300,
-        temperature=0.8
-    )
+    Args:
+        prompt (str): The user's story prompt.
+        image_description (str): Description of the image.
 
-    return response['choices'][0]['message']['content'].strip()
+    Returns:
+        str: Generated story.
+    """
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are a creative storyteller."},
+                {"role": "user", "content": f"Write a short story based on this idea: '{prompt}' and this image description: '{image_description}'"}
+            ],
+            max_tokens=400
+        )
+        return response['choices'][0]['message']['content'].strip()
+    except Exception as e:
+        logging.error(f"Failed to generate story: {e}")
+        raise
